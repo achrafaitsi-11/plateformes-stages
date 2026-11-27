@@ -14,6 +14,7 @@ foreach (['cv', 'lettres', 'justificatifs', 'rapports', 'logos', 'photos', 'mail
     $checks["storage/$d inscriptible"] = is_writable(STORAGE_PATH . "/$d") ? 'OK' : 'ÉCHEC';
 }
 $checks['PHP >= 8.1'] = PHP_VERSION_ID >= 80100 ? 'OK (' . PHP_VERSION . ')' : 'ÉCHEC (' . PHP_VERSION . ')';
+$checks['BASE_URL détectée'] = BASE_URL;
 $checks['Extension fileinfo'] = extension_loaded('fileinfo') ? 'OK' : 'ÉCHEC';
 
 foreach ($checks as $k => $v) {

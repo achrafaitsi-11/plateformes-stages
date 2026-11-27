@@ -14,7 +14,12 @@ const DB_USER = 'root';
 const DB_PASS = '';
 
 // URL de la racine web (dossier public/), sans slash final.
-const BASE_URL = '/plateforme-stages/public';
+// Détectée automatiquement à partir de l'emplacement du projet dans htdocs :
+// plus besoin de la modifier, quel que soit le nom du dossier.
+$docRoot = rtrim(str_replace('\\', '/', (string)realpath($_SERVER['DOCUMENT_ROOT'] ?? '')), '/');
+$publicDir = str_replace('\\', '/', (string)realpath(__DIR__ . '/../public'));
+define('BASE_URL', str_starts_with($publicDir, $docRoot) ? substr($publicDir, strlen($docRoot)) : '/plateformes-stages/public');
+unset($docRoot, $publicDir);
 
 // Fichiers envoyés : toujours hors de la racine web.
 define('STORAGE_PATH', dirname(__DIR__) . '/storage');
