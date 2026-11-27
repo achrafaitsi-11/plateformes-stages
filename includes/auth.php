@@ -62,7 +62,7 @@ const LOGIN_BLOCAGE_MINUTES = 15;
 function login(string $email, string $password): ?string
 {
     $pdo = getPdo();
-    $stmt = $pdo->prepare('SELECT id, password_hash, role, statut, tentatives_echec, bloque_jusqua FROM users WHERE email = ?');
+    $stmt = $pdo->prepare('SELECT id, password_hash, role, statut, tentatives_echec, (bloque_jusqua IS NOT NULL AND bloque_jusqua > NOW()) AS bloque FROM users WHERE email = ?');
     $stmt->execute([mb_strtolower(trim($email))]);
     $u = $stmt->fetch();
 
@@ -71,7 +71,7 @@ function login(string $email, string $password): ?string
         password_verify($password, '$2y$10$usesomesillystringforsaleuZLMeXgy0ehTRXF9o9rvDmK4h2JGe');
         return $generique;
     }
-    if ($u['bloque_jusqua'] !== null && strtotime($u['bloque_jusqua']) > time()) {
+    if ((int)$u['bloque'] === 1) {
         return 'Compte temporairement bloqué après trop d\'échecs. Réessayez dans quelques minutes.';
     }
     if (!password_verify($password, $u['password_hash'])) {
