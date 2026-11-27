@@ -1,0 +1,15 @@
+# Configuration locale (mots de passe) : ne jamais versionner
+config/config.php
+
+# Fichiers déposés par les utilisateurs (garder les dossiers via .gitkeep)
+storage/*/*
+!storage/*/.gitkeep
+
+# Divers
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+*.zip
+vendor/
