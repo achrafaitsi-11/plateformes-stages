@@ -19,7 +19,12 @@ $user = currentUser();
     <ul class="navbar-nav ms-auto">
       <?php if ($user): ?>
         <li class="nav-item"><span class="nav-link"><?= e($user['email']) ?> (<?= e($user['role']) ?>)</span></li>
-        <li class="nav-item"><a class="nav-link" href="<?= e(BASE_URL) ?>/logout.php">Déconnexion</a></li>
+        <li class="nav-item">
+          <form method="post" action="<?= e(BASE_URL) ?>/logout.php" class="d-inline">
+            <?= csrf_field() ?>
+            <button class="btn btn-link nav-link" type="submit">Déconnexion</button>
+          </form>
+        </li>
       <?php else: ?>
         <li class="nav-item"><a class="nav-link" href="<?= e(BASE_URL) ?>/login.php">Connexion</a></li>
         <li class="nav-item"><a class="nav-link" href="<?= e(BASE_URL) ?>/register.php">Inscription</a></li>

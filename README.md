@@ -8,7 +8,7 @@ Cahier des charges : `docs/cahier_des_charges.md`. Plan et tableau de suivi : vo
 
 1. Installer XAMPP avec PHP 8.1 ou plus (toute l'équipe la même version) et démarrer Apache + MySQL.
 2. Cloner le dépôt dans `htdocs/` : `git clone <url> plateforme-stages`.
-3. Copier `config/config.example.php` en `config/config.php` (ce fichier n'est jamais versionné) et vérifier `BASE_URL`.
+3. Copier `config/config.example.php` en `config/config.php` (ce fichier n'est jamais versionné) et vérifier que `BASE_URL` s'est bien détectée (affichée par healthcheck.php).
 4. Dans phpMyAdmin, importer `sql/schema.sql` (crée la base `stages`), puis `sql/seed.sql` quand M1 l'aura ajouté.
 5. Ouvrir `http://localhost/plateforme-stages/public/healthcheck.php` : tout doit afficher OK.
 
@@ -33,4 +33,11 @@ Cahier des charges : `docs/cahier_des_charges.md`. Plan et tableau de suivi : vo
 
 ## Comptes de démonstration
 
-Fournis par `sql/seed.sql` (M1) : un admin, deux étudiants, deux entreprises, un responsable pédagogique.
+Importer `sql/seed.sql` après `schema.sql`. Mot de passe de tous les comptes : `Demo1234!` (local uniquement).
+
+| Rôle | Email |
+|---|---|
+| Admin | admin@stages.test |
+| Étudiants | etudiant1@stages.test, etudiant2@stages.test |
+| Entreprises (validées) | entreprise1@stages.test, entreprise2@stages.test |
+| Pédagogie | pedago@stages.test |
