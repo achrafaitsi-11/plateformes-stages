@@ -23,12 +23,16 @@ function requireRole(string|array $roles): array
 
 function currentUser(): ?array
 {
-    static $user = false;
-    if ($user === false) {
+    // Cache valable pour un user_id donné : se recharge après login() ou logout().
+    static $cacheId = null;
+    static $user = null;
+    $id = $_SESSION['user_id'] ?? null;
+    if ($id !== $cacheId) {
+        $cacheId = $id;
         $user = null;
-        if (!empty($_SESSION['user_id'])) {
+        if ($id !== null) {
             $stmt = getPdo()->prepare('SELECT id, email, role, statut FROM users WHERE id = ?');
-            $stmt->execute([$_SESSION['user_id']]);
+            $stmt->execute([$id]);
             $user = $stmt->fetch() ?: null;
         }
     }
