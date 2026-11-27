@@ -33,4 +33,11 @@ Cahier des charges : `docs/cahier_des_charges.md`. Plan et tableau de suivi : vo
 
 ## Comptes de démonstration
 
-Fournis par `sql/seed.sql` (M1) : un admin, deux étudiants, deux entreprises, un responsable pédagogique.
+Importer `sql/seed.sql` après `schema.sql`. Mot de passe de tous les comptes : `Demo1234!` (local uniquement).
+
+| Rôle | Email |
+|---|---|
+| Admin | admin@stages.test |
+| Étudiants | etudiant1@stages.test, etudiant2@stages.test |
+| Entreprises (validées) | entreprise1@stages.test, entreprise2@stages.test |
+| Pédagogie | pedago@stages.test |

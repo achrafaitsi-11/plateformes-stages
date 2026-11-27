@@ -47,5 +47,77 @@ function currentProfileId(string $table): ?int
     return $id === false ? null : (int)$id;
 }
 
-// TODO M1 (T05-T07) : login(), logout(), verrouillage après 5 échecs, session_regenerate_id().
+const LOGIN_MAX_ECHECS = 5;
+const LOGIN_BLOCAGE_MINUTES = 15;
+
+/**
+ * Tente une connexion. Retourne null si OK, sinon un message d'erreur affichable.
+ * Message volontairement identique pour « email inconnu » et « mauvais mot de passe »
+ * (pas d'énumération des comptes), avec un hachage factice pour garder un temps de réponse proche.
+ */
+function login(string $email, string $password): ?string
+{
+    $pdo = getPdo();
+    $stmt = $pdo->prepare('SELECT id, password_hash, role, statut, tentatives_echec, bloque_jusqua FROM users WHERE email = ?');
+    $stmt->execute([mb_strtolower(trim($email))]);
+    $u = $stmt->fetch();
+
+    $generique = 'Email ou mot de passe incorrect.';
+    if (!$u) {
+        password_verify($password, '$2y$10$usesomesillystringforsaleuZLMeXgy0ehTRXF9o9rvDmK4h2JGe');
+        return $generique;
+    }
+    if ($u['bloque_jusqua'] !== null && strtotime($u['bloque_jusqua']) > time()) {
+        return 'Compte temporairement bloqué après trop d\'échecs. Réessayez dans quelques minutes.';
+    }
+    if (!password_verify($password, $u['password_hash'])) {
+        $n = (int)$u['tentatives_echec'] + 1;
+        if ($n >= LOGIN_MAX_ECHECS) {
+            $pdo->prepare('UPDATE users SET tentatives_echec = 0, bloque_jusqua = DATE_ADD(NOW(), INTERVAL ' . LOGIN_BLOCAGE_MINUTES . ' MINUTE) WHERE id = ?')
+                ->execute([$u['id']]);
+            journaliser('login_bloque', 'user_id=' . $u['id']);
+        } else {
+            $pdo->prepare('UPDATE users SET tentatives_echec = ? WHERE id = ?')->execute([$n, $u['id']]);
+        }
+        return $generique;
+    }
+    if ($u['statut'] === 'non_verifie') {
+        return 'Veuillez d\'abord vérifier votre adresse email.';
+    }
+    if (in_array($u['statut'], ['rejete', 'suspendu'], true)) {
+        return 'Ce compte n\'est pas autorisé à se connecter. Contactez l\'administration.';
+    }
+
+    session_regenerate_id(true);
+    $_SESSION['user_id'] = (int)$u['id'];
+    $pdo->prepare('UPDATE users SET tentatives_echec = 0, bloque_jusqua = NULL, derniere_connexion = NOW() WHERE id = ?')
+        ->execute([$u['id']]);
+    journaliser('login_ok');
+    return null;
+}
+
+function logout(): void
+{
+    journaliser('logout');
+    $_SESSION = [];
+    if (ini_get('session.use_cookies')) {
+        $p = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 3600, $p['path'], $p['domain'], $p['secure'], $p['httponly']);
+    }
+    session_destroy();
+}
+
+/** Page d'accueil de chaque rôle ; repli sur l'accueil tant que la page du rôle n'existe pas. */
+function dashboardPath(string $role): string
+{
+    $map = [
+        'etudiant'   => '/etudiant/index.php',
+        'entreprise' => '/entreprise/index.php',
+        'pedago'     => '/pedago/index.php',
+        'admin'      => '/admin/index.php',
+    ];
+    $path = $map[$role] ?? '/index.php';
+    return is_file(dirname(__DIR__) . '/public' . $path) ? $path : '/index.php';
+}
+
 // TODO M2 : inscription, vérification email, reset mot de passe.
