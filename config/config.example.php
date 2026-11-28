@@ -33,6 +33,9 @@ const SMTP_USER = '';
 const SMTP_PASS = '';
 const MAIL_FROM = 'no-reply@plateforme-stages.local';
 
+// En production, fixer l'URL publique du site pour les liens envoyés par email :
+// const APP_URL = 'https://stages.exemple.ma';
+
 // Limites d'envoi (en octets).
 const MAX_CV_BYTES = 2 * 1024 * 1024;
 const MAX_JUSTIFICATIF_BYTES = 3 * 1024 * 1024;

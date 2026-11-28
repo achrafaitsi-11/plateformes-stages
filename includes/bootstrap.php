@@ -30,6 +30,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-foreach (['functions', 'csrf', 'auth', 'upload', 'notifications', 'candidatures', 'stages', 'matching'] as $inc) {
+foreach (['functions', 'csrf', 'mail', 'auth', 'upload', 'notifications', 'candidatures', 'stages', 'matching'] as $inc) {
     require __DIR__ . "/$inc.php";
 }

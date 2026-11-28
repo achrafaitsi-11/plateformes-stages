@@ -37,7 +37,10 @@ require __DIR__ . '/../includes/header.php';
       </div>
       <button class="btn btn-primary w-100" type="submit">Se connecter</button>
     </form>
-    <p class="mt-3 small"><a href="<?= e(BASE_URL) ?>/register.php">Créer un compte</a></p>
+    <p class="mt-3 small">
+      <a href="<?= e(BASE_URL) ?>/forgot_password.php">Mot de passe oublié ?</a> ·
+      <a href="<?= e(BASE_URL) ?>/register.php">Créer un compte</a>
+    </p>
   </div>
 </div>
 <?php require __DIR__ . '/../includes/footer.php'; ?>

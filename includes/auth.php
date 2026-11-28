@@ -124,4 +124,46 @@ function dashboardPath(string $role): string
     return is_file(dirname(__DIR__) . '/public' . $path) ? $path : '/index.php';
 }
 
-// TODO M2 : inscription, vérification email, reset mot de passe.
+/**
+ * Règles de mot de passe, partagées (inscription M2, réinitialisation M1).
+ * Retourne null si le mot de passe est accepté, sinon un message affichable.
+ */
+function validerMotDePasse(string $mdp): ?string
+{
+    if (mb_strlen($mdp) < 8) {
+        return 'Le mot de passe doit contenir au moins 8 caractères.';
+    }
+    if (mb_strlen($mdp) > 72) {
+        return 'Le mot de passe ne doit pas dépasser 72 caractères.';
+    }
+    if (!preg_match('/[A-Za-z]/', $mdp) || !preg_match('/\d/', $mdp)) {
+        return 'Le mot de passe doit contenir au moins une lettre et un chiffre.';
+    }
+    return null;
+}
+
+/** Crée un jeton de réinitialisation (valable 30 min, usage unique) et retourne le jeton en clair. */
+function creerJetonReset(int $userId): string
+{
+    $pdo = getPdo();
+    // Un seul jeton valide à la fois par utilisateur.
+    $pdo->prepare('UPDATE password_resets SET utilise = 1 WHERE user_id = ? AND utilise = 0')->execute([$userId]);
+    $jeton = bin2hex(random_bytes(32));
+    $pdo->prepare('INSERT INTO password_resets (user_id, token_hash, expire_le) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 30 MINUTE))')
+        ->execute([$userId, hash('sha256', $jeton)]);
+    return $jeton;
+}
+
+/** Retourne l'id de l'utilisateur si le jeton est valide (existe, non utilisé, non expiré), sinon null. */
+function userIdPourJetonReset(string $jeton): ?int
+{
+    if (!preg_match('/^[0-9a-f]{64}$/', $jeton)) {
+        return null;
+    }
+    $stmt = getPdo()->prepare('SELECT user_id FROM password_resets WHERE token_hash = ? AND utilise = 0 AND expire_le > NOW()');
+    $stmt->execute([hash('sha256', $jeton)]);
+    $id = $stmt->fetchColumn();
+    return $id === false ? null : (int)$id;
+}
+
+// TODO M2 : inscription, vérification d'email.
