@@ -18,6 +18,12 @@ $user = currentUser();
     <a class="navbar-brand" href="<?= e(BASE_URL) ?>/index.php">Plateforme de stages</a>
     <ul class="navbar-nav ms-auto">
       <?php if ($user): ?>
+        <?php $nbNotifs = nombreNotificationsNonLues((int)$user['id']); ?>
+        <li class="nav-item">
+          <a class="nav-link" href="<?= e(BASE_URL) ?>/notifications.php" title="Notifications">
+            &#128276;<?php if ($nbNotifs > 0): ?> <span class="badge bg-danger"><?= $nbNotifs > 99 ? '99+' : (int)$nbNotifs ?></span><?php endif; ?>
+          </a>
+        </li>
         <li class="nav-item"><span class="nav-link"><?= e($user['email']) ?> (<?= e($user['role']) ?>)</span></li>
         <li class="nav-item">
           <form method="post" action="<?= e(BASE_URL) ?>/logout.php" class="d-inline">

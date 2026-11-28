@@ -36,3 +36,10 @@ INSERT INTO entreprises (id, user_id, raison_sociale, secteur, ice, rc, ville, r
   (1, 4, 'TechAtlas SARL', 'Informatique', '001234567000011', 'RC-CASA-1001', 'Casablanca', 'Tazi',   'Nadia', 'DRH', 'rh@techatlas.test', 'validee', 1, NOW()),
   (2, 5, 'SecuMaroc SA',   'Cybersécurité', '001234567000022', 'RC-RABAT-2002', 'Rabat',      'Fassi',  'Youssef', 'Directeur', 'contact@secumaroc.test', 'validee', 1, NOW())
 ON DUPLICATE KEY UPDATE user_id = user_id;
+
+-- Notifications de démonstration pour etudiant1 (ids fixes : réimportable sans doublons)
+INSERT INTO notifications (id, user_id, type, message, lien, lue) VALUES
+  (1, 2, 'compte_valide',       'Bienvenue ! Votre compte est actif.',                              '/index.php',                      1),
+  (2, 2, 'candidature_statut',  'Votre candidature a été présélectionnée par TechAtlas SARL.',     '/etudiant/mes_candidatures.php',  0),
+  (3, 2, 'message',             'Nouveau message de TechAtlas SARL.',                              '/index.php',                      0)
+ON DUPLICATE KEY UPDATE message = VALUES(message);
